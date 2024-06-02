@@ -1,0 +1,15 @@
+{
+  "*": {
+    "type": "page"
+  },
+  "index": {
+    "title": "Home",
+    "display": "hidden",
+    "theme": {
+      "layout": "raw"
+    }
+  },
+  "stories": {
+    "title": "Stories"
+  }
+}

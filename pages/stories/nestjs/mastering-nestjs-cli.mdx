@@ -1,0 +1,275 @@
+---
+title: Mastering NestJS CLI
+---
+
+# Mastering NestJS CLI
+
+Welcome to my NestJS Series! let's  dive into a key part of modern project development: automation.
+
+Just like any project, Nest projects benefit from automation. That's why Nest provides a helpful tool called Nest CLI, found in the `@nestjs/cli` package. This tool makes tasks like setting up projects, compiling, and automatically watching for file changes a breeze.
+
+In this part of our series, "Mastering NestCLI" we'll learn all about Nest CLI and how it can supercharge our development process. Let's get started!
+
+### Installing Nest CLI and Commonly Used Commands
+
+You can easily install `@nestjs/cli` and access its commonly used commands.
+
+To get started, you can execute it directly using npx, which will download it and then run it:
+
+```bash
+npx @nestjs/cli new <project-name>
+```
+Alternatively, you can install it globally and then execute it. This method is more recommended:
+
+```bash
+npm install -g @nestjs/cli
+
+nest new <project-name>
+```
+
+However, keep in mind that you may need to periodically update the CLI to ensure you're using the latest version:
+
+```bash
+npm update -g @nestjs/cli
+```
+
+Now, let's explore some of the commands provided by Nest CLI. You can see a list of available commands by running:
+
+```bash
+nest -h
+```
+
+![nest -h](/stories/nestjs/mastering-nestjs-cli/1.png)
+
+let's break down each command:
+
+
+### Creating a New Project: nest new
+
+The nest new command is used to create a new NestJS project. It initializes a new project with the necessary files and configurations to get started. It comes with several options:
+
+![nest new -h](/stories/nestjs/mastering-nestjs-cli/2.png)
+
+- `--skip-git` and `--skip-install` are easy to understand; they skip the initialization of Git and skip the npm install step.
+- `--package-manager` specifies the package manager to use. Previously, when creating a project, we were asked to choose:
+
+![nest new package manager](/stories/nestjs/mastering-nestjs-cli/3.png)
+
+Once specified, it skips the package manager selection step:
+
+![nest new package manager](/stories/nestjs/mastering-nestjs-cli/4.png)
+
+- `--language` allows you to specify TypeScript or JavaScript. Generally, we choose TypeScript, so it's fine to stick with the default.
+- `--strict` specifies whether strict mode is enabled for TypeScript compilation. There are five options:
+
+![tsconfig.json](/stories/nestjs/mastering-nestjs-cli/5.png)
+
+The default is false, but you can also specify true.
+
+### Generating Code: nest generate
+
+In addition to generating an entire project, the nest generate command can also generate other types of code, such as controllers, services, and modules.
+
+For example, to generate a module:
+
+```bash
+nest generate module module-name
+```
+
+It will generate the module's code:
+
+![nest generate module](/stories/nestjs/mastering-nestjs-cli/6.png)
+
+And automatically import it into the AppModule:
+
+![app module](/stories/nestjs/mastering-nestjs-cli/7.png)
+
+Similarly, you can generate controllers and services:
+
+```bash
+nest generate controller controller-name
+
+nest generate service service-name
+
+```
+
+![nest generate controller](/stories/nestjs/mastering-nestjs-cli/8.png)
+
+![nest generate service](/stories/nestjs/mastering-nestjs-cli/9.png)
+
+It will also update the module's dependencies.
+
+![user module](/stories/nestjs/mastering-nestjs-cli/10.png)
+
+Of course, if you want to generate a complete module's code without doing it one by one, you can use:
+
+```
+nest generate resource resource-name
+```
+
+It will prompt you to choose which type of code to generate because Nest supports HTTP, WebSocket, GraphQL, TCP, etc. Here, we choose HTTP for RESTful API:
+
+![nest generate resource](/stories/nestjs/mastering-nestjs-cli/11.png)
+
+Then let you choose whether to generate CRUD code:
+
+
+![nest generate resource](/stories/nestjs/mastering-nestjs-cli/12.png)
+
+After selecting "Yes," the entire module's CRUD + REST API code will be generated:
+
+![nest generate resource](/stories/nestjs/mastering-nestjs-cli/13.png)
+
+Of course, it will also automatically import it into the AppModule:
+
+![app module](/stories/nestjs/mastering-nestjs-cli/14.png)
+
+![product controller](/stories/nestjs/mastering-nestjs-cli/15.png)
+
+This is how nest generate works, enabling quick generation of various types of code:
+
+![nest generate -h](/stories/nestjs/mastering-nestjs-cli/16.png)
+
+These code templates are defined in the @nestjs/schematics package.
+
+When creating a project with nest new, there's an option --collection for configuring this. However, we typically don't need to configure it.
+
+You can see the definitions of these code templates in @nestjs/schematics:
+
+![nestjs schematics](/stories/nestjs/mastering-nestjs-cli/17.png)
+
+Its implementation is straightforward; it uses a template engine to fill in variables and prints out the code:
+
+![nestjs schematics](/stories/nestjs/mastering-nestjs-cli/18.png)
+
+nest generate also comes with several options:
+
+-  --flat and --no-flat specify whether to generate corresponding directories.
+
+- --spec and --no-spec specify whether to generate test files.
+
+- --skip-import specifies not to import into the AppModule.
+
+As for --project, it specifies which sub-project the generated code is for. We'll discuss this when we use it in a monorepo project later.
+
+This is the powerful capability provided by Nest CLI for quickly generating various types of code. Isn't it convenient?
+
+### Building Your Project：nest build
+
+Next up is nest build, which is used to build the project. Executing nest build will generate compiled code in the dist directory.
+
+Similarly, it comes with some options:
+
+![nest build -h](/stories/nestjs/mastering-nestjs-cli/19.png)
+
+- --webpack and --tsc specify which compiler to use. By default, it's tsc, but you can switch to webpack.
+
+Here's the output of tsc compilation:
+
+![nest build](/stories/nestjs/mastering-nestjs-cli/20.png)
+
+And here's the output of webpack compilation:
+
+![nest build --webpack](/stories/nestjs/mastering-nestjs-cli/21.png)
+
+tsc doesn't bundle, while webpack does. Both methods are viable.
+
+- --watch listens for file changes and automatically builds. By default, it only watches .ts and .js files. Adding --watchAssets will also watch other files like .md, .yml, etc., and output them to the dist directory.
+- --path specifies the path to the tsc configuration file.
+
+Now, what about --config?
+
+It's for specifying a configuration file, but not for your project. It's for Nest CLI's configuration file.
+
+### Configuration with nest-cli.json
+
+All the options we mentioned earlier can be configured in nest-cli.json:
+
+![nest build --webpack](/stories/nestjs/mastering-nestjs-cli/22.png)
+
+For example, setting webpack to true in compilerOptions is equivalent to nest build --webpack:
+
+```json
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "generateOptions": {
+    "spec": false,
+    "flat": false
+  },
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "watchAssets": false,
+    "assets": [
+      "**/*.css"
+    ]
+  }
+}
+```
+
+Setting webpack to false uses tsc.
+
+Setting deleteOutDir to true clears the dist directory every time you build.
+
+assets specifies which non .js and .ts files to copy to the dist directory during nest build.
+
+You can use include and exclude for precise matching and specify whether to watchAssets separately.
+
+However, it only supports copying files from the src directory. If they're outside src, you'll need to write your own script.
+
+Next is generateOptions, which has the same effect as --no-spec and --no-flat when using nest generate.
+
+sourceRoot specifies the source code directory.
+
+entryFile specifies the entry file name, defaulting to main.
+
+$schema specifies the schema for nest-cli.json. You can see which properties it can have here:
+
+> https://json.schemastore.org/nest-cli
+
+It's a pretty straightforward JSON schema, If you want to fully understand what properties nest-cli.json can have, take a look at this schema definition.
+
+### Running Your Application: nest start
+
+Next, let's take a look at the nest start command:
+
+![nest start](/stories/nestjs/mastering-nestjs-cli/23.png)
+
+You can see that it rebuilds every time and runs main.js with Node.
+
+It has the following options:
+
+![nest start -h](/stories/nestjs/mastering-nestjs-cli/24.png)
+
+- --watch is the most commonly used option, automatically rebuilding when files are changed.
+- --debug starts a debugging WebSocket service for debugging.
+- --exec specifies which runtime to use. By default, it's Node, but you can switch to another runtime.
+
+The rest of the options are the same as nest build, so I won't repeat them.
+
+### Viewing Project Information: nest info
+
+Lastly, there's the nest info command, which is used to view project information, including system information, Node.js, npm, and dependency versions:
+
+![nest start -h](/stories/nestjs/mastering-nestjs-cli/25.png)
+
+### Summary
+
+Nest provides the nest command in the @nestjs/cli package, which can be used for various tasks:
+- Generating project structures and various types of code
+- Compiling code
+- Automatically compiling code when files change
+- Printing project dependency information
+
+These are the subcommands available:
+- nest new: Quickly create a project
+- nest generate: Quickly generate various types of code
+- nest build: Build code using tsc or webpack
+- nest start: Start the development server, supports watching and debugging
+- nest info: Print dependency versions of Node.js, npm, and Nest packages
+
+Many options can be configured in nest-cli.json, such as generateOptions, compilerOptions, etc.
+
+Mastering Nest CLI is an important step in mastering Nest. Stay tuned for more articles in the NestJS series, where I'll continue to share insights and tips.
